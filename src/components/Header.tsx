@@ -7,14 +7,14 @@ import Badge from "@mui/material/Badge";
 const Header = () => {
   const [invisible, setInvisible] = useState(false);
   return (
-    <div className="bg-white flex w-full z-40 p-2">
+    <div className="bg-white h-12 flex w-full z-40 ">
       <div className="flex-1">
         <div className="flex flex-row items-center ">
           <Image
             src="/driver.jpg"
             alt="driver"
-            width={64}
-            height={64}
+            width={44}
+            height={44}
             className="rounded-full"
           />
           <h4 className="font-semibold text-lg">ACCRA DRIVING SCHOOL</h4>
@@ -28,7 +28,7 @@ const Header = () => {
           max={99}
           overlap="circular"
           invisible={invisible}
-          className="w-10 h-10 rounded-full  border cursor-pointer gap-x-4 flex items-center justify-center"
+          className="w-10 h-10 rounded-full mr-2  border cursor-pointer gap-x-4 flex items-center justify-center"
         >
           <Bell className="w-4" />
         </Badge>
