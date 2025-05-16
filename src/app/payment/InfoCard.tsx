@@ -2,7 +2,9 @@ import React from 'react'
 
 const InfoCard = () => {
   return (
-    <div>InfoCard</div>
+    <div className='w-72 h-44 border'>
+
+    </div>
   )
 }
 
