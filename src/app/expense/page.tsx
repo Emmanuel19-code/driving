@@ -1,17 +1,16 @@
 "use client";
-import { Plus } from "lucide-react";
-import React from "react";
-import InfoCard from "./InfoCard";
-import PaginationControl from "../students/PaginationControl";
-import { useRouter } from "next/navigation";
+import React from 'react'
+import PaginationControl from '../students/PaginationControl'
+import { Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation';
 
-const PaymentPage = () => {
+const ExpensePage = () => {
   const router = useRouter();
   return (
-    <div className="max-w-full ">
+   <div className="max-w-full ">
       <div className="mt-4 ml-72 mr-4   bg-white rounded-md p-4">
         <div className="flex flex-row items-center justify-between">
-          <h4 className="text-3xl font-medium">Payments Records</h4>
+          <h4 className="text-3xl font-medium">Expense Records</h4>
           <div className="flex flex-row items-center">
             <button className="w-24 m-1 text-sm font-medium  border-black rounded-md cursor-pointer py-2 border-2">
               Filters
@@ -21,7 +20,7 @@ const PaymentPage = () => {
             </button>
             <button className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border" onClick={()=>router.push("/recordpayment")}>
               <Plus className="w-5" />
-              Record Payment
+              Record Expense
             </button>
           </div>
         </div>
@@ -33,7 +32,7 @@ const PaymentPage = () => {
         </div>
 
         {/*main table */}
-        <div className="relative overflow-x-auto mt-3 h-96 2xl:h-[700px] scrollbar-hide  mb-2 rounded-lg">
+        <div className="relative overflow-x-auto mt-3 h-96 scrollbar-hide 2xl:h-[700px]  mb-2 rounded-lg">
           <table className="w-full rounded-lg text-sm h-96 text-left rtl:text-right scrollbar-hide overflow-y-scroll bg-white border text-gray-500 ">
             <thead className="text-xs  text-white  bg-[#302394] sticky top-0">
               <tr>
@@ -454,7 +453,7 @@ const PaymentPage = () => {
         <PaginationControl />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PaymentPage;
+export default ExpensePage

@@ -17,9 +17,9 @@ const SidebarLink = ({href,icon:Icon,label,isCollapsed}:SidebarLinkProps) => {
   const isActive = pathname === href || (pathname  === "/" && href === "/dashboard")
   return (
     <Link href={href}>
-    <div className={`cursor-pointer flex items-center ${isCollapsed?"justify-center py-2":"justify-start px-8 py-4"}  gap-3  ${isActive?"bg-white text-[#302394]":""} `}>
-        <Icon className={`w-5 h-5  ${isActive?"!text-[#302394]":"!text-white"}`}/>
-        <span className={`${isCollapsed?"hidden":"block"} text-gray-700 font-medium`}>
+    <div className={`cursor-pointer flex items-center ${isCollapsed?"justify-center py-2":"justify-start px-8 py-2"}  gap-3 rounded  ${isActive?"bg-white text-[#302394]":""} `}>
+        <Icon className={`w-4 h-5  ${isActive?"!text-[#302394]":"!text-white"}`}/>
+        <span className={`${isCollapsed?"hidden":"block"} ${isActive && "!text-[#302394]"} text-white `}>
            {label}
         </span>
     </div>
