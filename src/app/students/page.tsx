@@ -1,23 +1,32 @@
 "use client";
 import React from "react";
-import PaginationControl from "./PaginationControl";
+import PaginationControl from "../../components/PaginationControl";
 import StudentOverviewHeader from "./StudentOverviewHeader";
 import { useAppSelector } from "../redux";
+import { useRouter } from "next/navigation";
 
 const StudentPage = () => {
   const isSidebarCollapsed = useAppSelector(
-      (state)=>state.global.isSidebarCollapsed
-     );
+    (state) => state.global.isSidebarCollapsed
+  );
+  const router = useRouter();
   return (
     <div className="max-w-full">
-      <div className={`mt-4 ${isSidebarCollapsed?"ml-36":"ml-72"}  mr-4 bg-white rounded-md p-4`}>
+      <div
+        className={`mt-4 ${
+          isSidebarCollapsed ? "ml-36" : "ml-72"
+        }  mr-4 bg-white rounded-md p-4`}
+      >
         <div className="flex flex-row items-center justify-between">
           <h4 className="text-2xl font-bold">Students</h4>
           <div>
             <button className="w-32 m-1 text-sm text-[#302394] border-[#302394] rounded-md cursor-pointer py-2 border">
               Class to Practicals
             </button>
-            <button className="w-32 bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border">
+            <button
+              className="w-32 bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
+              onClick={() => router.push("/students/registerStudent")}
+            >
               Add Student
             </button>
           </div>
@@ -36,7 +45,7 @@ const StudentPage = () => {
                 <th scope="col" className="px-6 py-4">
                   Student Name
                 </th>
-                
+
                 <th scope="col" className="px-6 py-4">
                   Contact
                 </th>
@@ -64,10 +73,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right hover:underline underline-black hover:text-black">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -84,10 +90,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -104,10 +107,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -124,10 +124,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -144,10 +141,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -164,10 +158,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -184,10 +175,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -204,10 +192,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -224,10 +209,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -244,10 +226,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -264,10 +243,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -284,10 +260,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$2999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -304,10 +277,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>
@@ -324,10 +294,7 @@ const StudentPage = () => {
                 <td className="px-6 py-4">$99</td>
                 <td className="px-6 py-4">$1999</td>
                 <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className=" "
-                  >
+                  <a href="#" className=" ">
                     view Profile
                   </a>
                 </td>

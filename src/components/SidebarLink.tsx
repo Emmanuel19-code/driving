@@ -14,7 +14,7 @@ interface SidebarLinkProps
 
 const SidebarLink = ({href,icon:Icon,label,isCollapsed}:SidebarLinkProps) => {
   const pathname = usePathname();
-  const isActive = pathname === href || (pathname  === "/" && href === "/dashboard")
+  const isActive = pathname === href || (pathname  === "/" && href === "/dashboard") || (pathname === "/students/registerStudent" && href === "/students")
   return (
     <Link href={href}>
     <div className={`cursor-pointer flex items-center ${isCollapsed?"justify-center py-2":"justify-start px-8 py-2"}  gap-3 rounded  ${isActive?"bg-white text-[#302394]":""} `}>

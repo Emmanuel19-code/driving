@@ -25,7 +25,7 @@ const Sidebar = () => {
   const toggleSidebar = () => {
     dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
   };
-  console.log(isSidebarCollapsed);
+  
 
   const sidebarClassNames = ` ${
     isSidebarCollapsed ? "w-0 md:w-16" : "w-72 md:w-64"
@@ -33,7 +33,7 @@ const Sidebar = () => {
 
   return (
     <div className={sidebarClassNames}>
-      <div className="mt-12 px-4 py-2">
+      <div className="mt-14 px-4 py-2">
         <div className="flex justify-end">
           {isSidebarCollapsed ? (
             <ArrowRightCircle className="text-white" onClick={toggleSidebar} />
@@ -44,7 +44,7 @@ const Sidebar = () => {
         <div>
           {!isSidebarCollapsed && <h4 className="text-slate-400 ">OVERVIEW</h4>}
 
-          <div className="flex-grow mt-8 ">
+          <div className="flex-grow mt-4 ">
             <SidebarLink
               href="/"
               icon={Layout}
@@ -70,9 +70,9 @@ const Sidebar = () => {
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
-              href="/availableCars"
+              href="/companyCars"
               icon={Car}
-              label="Available Cars"
+              label="Company Cars"
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
@@ -88,9 +88,9 @@ const Sidebar = () => {
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
-              href="/scheduling"
+              href="/schedules"
               icon={CalendarRange}
-              label="Scheduling"
+              label="Schedules"
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink

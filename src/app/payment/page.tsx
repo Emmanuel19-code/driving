@@ -2,7 +2,7 @@
 import { Plus } from "lucide-react";
 import React from "react";
 import InfoCard from "./InfoCard";
-import PaginationControl from "../students/PaginationControl";
+import PaginationControl from "../../components/PaginationControl";
 import { useRouter } from "next/navigation";
 
 const PaymentPage = () => {
@@ -19,7 +19,10 @@ const PaymentPage = () => {
             <button className="w-24 m-1 text-sm font-medium  border-black  rounded-md cursor-pointer py-2 border-2">
               Search
             </button>
-            <button className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border" onClick={()=>router.push("/recordpayment")}>
+            <button
+              className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
+              onClick={() => router.push("/recordpayment")}
+            >
               <Plus className="w-5" />
               Record Payment
             </button>
@@ -447,7 +450,6 @@ const PaymentPage = () => {
                   </a>
                 </td>
               </tr>
-              
             </tbody>
           </table>
         </div>
