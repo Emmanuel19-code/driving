@@ -54,7 +54,7 @@ const Sidebar = () => {
             <SidebarLink
               href="/instructors"
               icon={User2}
-              label="Instructors"
+              label="Instructors/Admins"
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
@@ -64,9 +64,9 @@ const Sidebar = () => {
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
-              href="/drivingTest"
+              href="/theoryandpractical"
               icon={Car}
-              label="Driving Test"
+              label="Theory/Practical"
               isCollapsed={isSidebarCollapsed}
             />
             <SidebarLink
