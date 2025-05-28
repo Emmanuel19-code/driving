@@ -1,7 +1,17 @@
 import { Filter, Search } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-const StudentOverviewHeader = () => {
+const StudentOverviewHeader = ({onSendData}) => {
+  const [search,setSearch] = useState("")
+  const sendData = () =>{
+     onSendData(search)
+  }
+  useEffect(()=>{
+   if(search !== "")
+   {
+     onSendData(search)
+   }
+  },[search])
   return (
     <div className="flex mt-2 flex-row justify-between items-center">
           <div className="flex space-x-4 flex-row items-center">
@@ -33,8 +43,9 @@ const StudentOverviewHeader = () => {
               <p>Filters</p>
             </div>
             <div className="flex space-x-1 flex-row border px-4 py-1 rounded-md border-black items-center">
+              
+              <input type='text' className='outline-none' name="search" value={search} onChange={(e)=>setSearch(e.target.value)}/>
               <Search className="w-4 " />
-              <p>Search</p>
             </div>
           </div>
         </div>

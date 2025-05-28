@@ -8,6 +8,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  AreaChart,
+  Area,
 } from "recharts";
 const data = [
   {
@@ -56,28 +58,49 @@ const data = [
 
 const RevenueSummary = () => {
   return (
-    <div className="bg-white mt-2 rounded-md p-2">
+    <div className="bg-white p-2 shadow m-2 h-48 rounded w-full overflow-y-scroll scrollbar-hide">
       <div>
         <div>
-          <p className="text-lg font-medium">Revenue Summary (₵)</p>
-          <h4 className="font-bold text-3xl">₵5450</h4>
+          <p className="">Revenue Summary (₵)</p>
+          <h4 className="">₵5450</h4>
         </div>
       </div>
       <ResponsiveContainer>
-        <LineChart
+        <AreaChart
           width={730}
-          height={250}
+          height={100}
           data={data}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 10, right: 30 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <defs>
+            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+            </linearGradient>
+          </defs>
           <XAxis dataKey="name" />
           <YAxis />
+          <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-        </LineChart>
+          <Area
+            type="monotone"
+            dataKey="uv"
+            stroke="#8884d8"
+            fillOpacity={1}
+            fill="url(#colorUv)"
+          />
+          <Area
+            type="monotone"
+            dataKey="pv"
+            stroke="#82ca9d"
+            fillOpacity={1}
+            fill="url(#colorPv)"
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
