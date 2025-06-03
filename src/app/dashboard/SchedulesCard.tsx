@@ -12,10 +12,7 @@ const SchedulesCard = () => {
           </p>
           */}
         </div>
-        {/*
-            <p className="text-xs text-slate-500">Course teachers</p>
-            
-            */}
+        <p className="text-xs text-slate-500">Today</p>
       </div>
       <h4 className="font-bold text-lg">20</h4>
       <div className="flex flex-row items-center space-x-2 ">

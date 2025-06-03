@@ -1,16 +1,17 @@
 "use client";
-import { Download } from "lucide-react";
+import { Download, UserCircle } from "lucide-react";
 import React from "react";
 import InstructorCard from "./InstructorCard";
 import SchedulesCard from "./SchedulesCard";
 import StudentCard from "./StudentCard";
 import RevenueSummary from "./RevenueSummary";
-
+import RecentActivity from "./RecentActivity";
+import ImportantNotice from "./ImportantNotice";
 
 const DashboardPage = () => {
   return (
     <div className="max-w-full ">
-      <div className="mt-2  flex flex-1 flex-row">
+      <div className="mt-2  flex flex-1 flex-row ">
         <div className="w-9/12">
           <div className="bg-white shadow p-2 m-2 h-44  rounded w-full">
             <div className="flex flex-row ml-2 justify-between items-center">
@@ -32,7 +33,7 @@ const DashboardPage = () => {
               <SchedulesCard />
             </div>
           </div>
-          <RevenueSummary/>
+          <RevenueSummary />
           <div className="bg-white p-2 shadow m-2 h-40 rounded w-full">
             <div className="flex flex-row justify-between items-center">
               <div>
@@ -49,7 +50,12 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-        <div></div>
+        <div className=" ml-5">
+          {/*Recent Activity */}
+          <RecentActivity />
+          {/*Notice */}
+          <ImportantNotice />
+        </div>
       </div>
     </div>
   );
