@@ -1,3 +1,4 @@
+"use client";
 import { useAppSelector } from "@/app/redux";
 import { setIsSidebarCollapsed } from "@/state";
 import {
@@ -5,20 +6,23 @@ import {
   ArrowRightCircle,
   CalendarRange,
   Car,
+  ChevronDown,
   CircleDollarSign,
   CreditCard,
+  Fuel,
   Layout,
   Notebook,
   SlidersHorizontal,
   User,
   User2,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import SidebarLink from "./SidebarLink";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const [isPayrollOpen, setIsPayrollOpen] = useState(false);
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
@@ -87,6 +91,38 @@ const Sidebar = () => {
             label="Company Cars"
             isCollapsed={isSidebarCollapsed}
           />
+          <div
+            className="flex flex-row justify-between items-center cursor-pointer"
+            onClick={() => setIsPayrollOpen(!isPayrollOpen)}
+          >
+            {!isSidebarCollapsed && (
+              <h4 className="text-slate-400">Employee Payment</h4>
+            )}
+
+            <ChevronDown
+              className={`text-gray-500 transition-transform duration-200 ${
+                isPayrollOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+
+          {isPayrollOpen && (
+            <div className="">
+              <SidebarLink
+                href="/payroll"
+                icon={Car}
+                label="Payroll"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/deductionManagement"
+                icon={Car}
+                label="Set Deductions"
+                isCollapsed={isSidebarCollapsed}
+              />
+              {/* Add more submenu items here if needed */}
+            </div>
+          )}
           <SidebarLink
             href="/payment"
             icon={CreditCard}
@@ -97,6 +133,12 @@ const Sidebar = () => {
             href="/expense"
             icon={CircleDollarSign}
             label="Expenses"
+            isCollapsed={isSidebarCollapsed}
+          />
+          <SidebarLink
+            href="/fuel"
+            icon={Fuel}
+            label="Fuel"
             isCollapsed={isSidebarCollapsed}
           />
           <SidebarLink

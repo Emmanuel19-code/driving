@@ -5,12 +5,13 @@ import InstructorCard from "./InstructorCard";
 import SchedulesCard from "./SchedulesCard";
 import StudentCard from "./StudentCard";
 import RevenueSummary from "./RevenueSummary";
+import AlertCard from "./AlertCard";
 
 
 const DashboardPage = () => {
   return (
     <div className="max-w-full ">
-      <div className="mt-2  flex flex-1 flex-row">
+      <div className="mt-2 bg-green-500 flex flex-1 flex-row">
         <div className="w-9/12">
           <div className="bg-white shadow p-2 m-2 h-44  rounded w-full">
             <div className="flex flex-row ml-2 justify-between items-center">
@@ -49,7 +50,9 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-        <div></div>
+        <div className="ml-5 mt-2">
+           <AlertCard/>
+        </div>
       </div>
     </div>
   );
