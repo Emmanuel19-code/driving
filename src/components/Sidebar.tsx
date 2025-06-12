@@ -23,6 +23,7 @@ import SidebarLink from "./SidebarLink";
 const Sidebar = () => {
   const dispatch = useDispatch();
   const [isPayrollOpen, setIsPayrollOpen] = useState(false);
+  const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
@@ -123,24 +124,43 @@ const Sidebar = () => {
               {/* Add more submenu items here if needed */}
             </div>
           )}
-          <SidebarLink
-            href="/payment"
-            icon={CreditCard}
-            label="Payments"
-            isCollapsed={isSidebarCollapsed}
-          />
-          <SidebarLink
-            href="/expense"
-            icon={CircleDollarSign}
-            label="Expenses"
-            isCollapsed={isSidebarCollapsed}
-          />
-          <SidebarLink
-            href="/fuel"
-            icon={Fuel}
-            label="Fuel"
-            isCollapsed={isSidebarCollapsed}
-          />
+          <div
+            className="flex flex-row justify-between items-center cursor-pointer"
+            onClick={() => setIsTransactionsOpen(!isTransactionsOpen)}
+          >
+            {!isSidebarCollapsed && (
+              <h4 className="text-slate-400">Transactions</h4>
+            )}
+
+            <ChevronDown
+              className={`text-gray-500 transition-transform duration-200 ${
+                isTransactionsOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+          {isTransactionsOpen && (
+            <>
+              <SidebarLink
+                href="/payment"
+                icon={CreditCard}
+                label="Payments"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/expense"
+                icon={CircleDollarSign}
+                label="Expenses"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/fuel"
+                icon={Fuel}
+                label="Fuel"
+                isCollapsed={isSidebarCollapsed}
+              />
+            </>
+          )}
+
           <SidebarLink
             href="/schedules"
             icon={CalendarRange}

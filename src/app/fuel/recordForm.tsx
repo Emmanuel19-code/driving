@@ -1,4 +1,5 @@
 "use client";
+import { useGetAllCarsQuery } from "@/state/api";
 import React, { useState } from "react";
 
 type FormProps = {
@@ -6,6 +7,7 @@ type FormProps = {
 };
 
 const RecordForm = ({ onCreate }: FormProps) => {
+  const { data: cars, isError, isLoading } = useGetAllCarsQuery();
   const [formData, setFormData] = useState({
     carNumber: "",
     amountPurchased: "",
@@ -38,7 +40,12 @@ const RecordForm = ({ onCreate }: FormProps) => {
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded  block w-full p-1"
             >
-              <option selected>Choose car</option>
+              <option value="">Choose car</option>
+              {cars?.map((car, index) => (
+                <option key={index} value={car.carRegistrationNumber}>
+                  {car.carRegistrationNumber}
+                </option>
+              ))}
             </select>
           </div>
         </div>
