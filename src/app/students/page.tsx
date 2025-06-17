@@ -25,16 +25,16 @@ const columns: GridColDef[] = [
     width: 100,
   },
   {
-    field: "serviceType",
-    headerName: "Service Registered",
+    field: "amountOwing",
+    headerName: "Amount Owing",
     width: 100,
-    valueGetter: (value, row) => (row.serviceType ? row.serviceType : "N/A"),
+    valueGetter: (value, row) => (row.amountOwing ? row.amountOwing : "N/A"),
   },
   {
-    field: "dateCompleted",
-    headerName: "Date Completed",
+    field: "amountPaid",
+    headerName: "Amount Paid",
     width: 100,
-    valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
+    valueGetter: (value, row) => (row.amountPaid ? row.amountPaid : "N/A"),
   },
 ];
 

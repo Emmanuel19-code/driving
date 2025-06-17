@@ -13,6 +13,7 @@ import {
   Layout,
   Notebook,
   SlidersHorizontal,
+  Timer,
   User,
   User2,
 } from "lucide-react";
@@ -165,6 +166,12 @@ const Sidebar = () => {
             href="/schedules"
             icon={CalendarRange}
             label="Schedules"
+            isCollapsed={isSidebarCollapsed}
+          />
+          <SidebarLink
+            href="/timeSlots"
+            icon={Timer}
+            label="Time Slots"
             isCollapsed={isSidebarCollapsed}
           />
           <SidebarLink
