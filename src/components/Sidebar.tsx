@@ -1,3 +1,4 @@
+"use client";
 import { useAppSelector } from "@/app/redux";
 import { setIsSidebarCollapsed } from "@/state";
 import {
@@ -5,20 +6,25 @@ import {
   ArrowRightCircle,
   CalendarRange,
   Car,
+  ChevronDown,
   CircleDollarSign,
   CreditCard,
+  Fuel,
   Layout,
   Notebook,
   SlidersHorizontal,
+  Timer,
   User,
   User2,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import SidebarLink from "./SidebarLink";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const [isPayrollOpen, setIsPayrollOpen] = useState(false);
+  const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
@@ -87,22 +93,85 @@ const Sidebar = () => {
             label="Company Cars"
             isCollapsed={isSidebarCollapsed}
           />
-          <SidebarLink
-            href="/payment"
-            icon={CreditCard}
-            label="Payments"
-            isCollapsed={isSidebarCollapsed}
-          />
-          <SidebarLink
-            href="/expense"
-            icon={CircleDollarSign}
-            label="Expenses"
-            isCollapsed={isSidebarCollapsed}
-          />
+          <div
+            className="flex flex-row justify-between items-center cursor-pointer"
+            onClick={() => setIsPayrollOpen(!isPayrollOpen)}
+          >
+            {!isSidebarCollapsed && (
+              <h4 className="text-slate-400">Employee Payment</h4>
+            )}
+
+            <ChevronDown
+              className={`text-gray-500 transition-transform duration-200 ${
+                isPayrollOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+
+          {isPayrollOpen && (
+            <div className="">
+              <SidebarLink
+                href="/payroll"
+                icon={Car}
+                label="Payroll"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/deductionManagement"
+                icon={Car}
+                label="Set Deductions"
+                isCollapsed={isSidebarCollapsed}
+              />
+              {/* Add more submenu items here if needed */}
+            </div>
+          )}
+          <div
+            className="flex flex-row justify-between items-center cursor-pointer"
+            onClick={() => setIsTransactionsOpen(!isTransactionsOpen)}
+          >
+            {!isSidebarCollapsed && (
+              <h4 className="text-slate-400">Transactions</h4>
+            )}
+
+            <ChevronDown
+              className={`text-gray-500 transition-transform duration-200 ${
+                isTransactionsOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+          {isTransactionsOpen && (
+            <>
+              <SidebarLink
+                href="/payment"
+                icon={CreditCard}
+                label="Payments"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/expense"
+                icon={CircleDollarSign}
+                label="Expenses"
+                isCollapsed={isSidebarCollapsed}
+              />
+              <SidebarLink
+                href="/fuel"
+                icon={Fuel}
+                label="Fuel"
+                isCollapsed={isSidebarCollapsed}
+              />
+            </>
+          )}
+
           <SidebarLink
             href="/schedules"
             icon={CalendarRange}
             label="Schedules"
+            isCollapsed={isSidebarCollapsed}
+          />
+          <SidebarLink
+            href="/timeSlots"
+            icon={Timer}
+            label="Time Slots"
             isCollapsed={isSidebarCollapsed}
           />
           <SidebarLink

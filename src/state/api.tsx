@@ -2,9 +2,9 @@ import { StudentData } from "@/interfaces/student";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/" }),
   reducerPath: "api",
-  tagTypes:["Students"],
+  tagTypes:["Students","CompanyCars","TimeSlots"],
   endpoints: (build) => ({
     addStudents: build.mutation({
       query: (newStudent:StudentData) => ({
@@ -20,9 +20,17 @@ export const api = createApi({
        providesTags:["Students"]
     }),
     getSearchStudent:build.query({
-       query:(name)=>`/search_student?name=${name}`
+       query:(name)=>`students/search_student?name=${name}`
+    }),
+    getAllCars:build.query({
+       query:()=>"companycar/get_cars",
+       providesTags:["CompanyCars"]
+    }),
+    getTimeSlots:build.query({
+      query:()=>"bookingAndslots/generated_slots",
+      providesTags:["TimeSlots"]
     })
   }),
 });
 
-export const {useAddStudentsMutation,useGetStudentsQuery,useGetSearchStudentQuery} = api;
+export const {useAddStudentsMutation,useGetStudentsQuery,useGetSearchStudentQuery,useGetAllCarsQuery,useGetTimeSlotsQuery} = api;

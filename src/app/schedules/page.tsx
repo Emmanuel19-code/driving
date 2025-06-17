@@ -21,7 +21,7 @@ const SchedulePage = () => {
   };
 
   return (
-    <div className="ml-72 mr-4 mt-4">
+    <div className=" ml-4 bg-white p-2 rounded mr-4 mt-4">
       <Calendar
         localizer={localizer}
         events={calendarEvents}
