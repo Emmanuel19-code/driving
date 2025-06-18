@@ -14,7 +14,7 @@ const ServiceType = () => {
             <div className="flex items-center space-x-2">
               <button
                 className="w-32 bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
-                onClick={() => router.push("/students/registerStudent")}
+                onClick={() => router.push("/serviceType/registerService")}
               >
                 Register Service
               </button>
