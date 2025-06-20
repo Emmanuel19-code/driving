@@ -1,11 +1,22 @@
+// src/state/api.ts
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddServiceData } from "@/interfaces/service";
 import { StudentData } from "@/interfaces/student";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { customBaseQuery } from "./customBaseQuery";
+
+import { LoginCredentials } from "@/interfaces/auth";
+import { clearAccessToken } from ".";
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/" }),
+  baseQuery: customBaseQuery,
   reducerPath: "api",
-  tagTypes: ["Students", "CompanyCars", "TimeSlots", "Services","CompletedTheory"],
+  tagTypes: [
+    "Students",
+    "CompanyCars",
+    "TimeSlots",
+    "Services",
+    "CompletedTheory",
+  ],
   endpoints: (build) => ({
     addStudents: build.mutation({
       query: (newStudent: StudentData) => ({
@@ -24,7 +35,7 @@ export const api = createApi({
       query: (name) => `students/search_student?name=${name}`,
     }),
     getAllCars: build.query({
-      query: () => "companycar/get_cars",
+      query: () => "companycar/get_car_registration_number",
       providesTags: ["CompanyCars"],
     }),
     getTimeSlots: build.query({
@@ -43,9 +54,31 @@ export const api = createApi({
       }),
       invalidatesTags: ["Services"],
     }),
-    studentsCompletedTheory:build.query({
-       query:()=>"students/completed_theory_class",
-       providesTags:["CompletedTheory"]
+    studentsCompletedTheory: build.query({
+      query: () => "students/completed_theory_class",
+      providesTags: ["CompletedTheory"],
+    }),
+    logout: build.mutation<void, void>({
+      query: () => ({
+        url: "system_security/logout",
+        method: "POST",
+        credentials: "include",
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(clearAccessToken());
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
+      },
+    }),
+    signIn:build.mutation({
+       query:(credentials:LoginCredentials)=>({
+         url:"system_security/login",
+         method:"POST",
+         body:credentials
+       })
     })
   }),
 });
@@ -58,5 +91,7 @@ export const {
   useGetTimeSlotsQuery,
   useGetAllServicesQuery,
   useAddServiceMutation,
-  useStudentsCompletedTheoryQuery
+  useStudentsCompletedTheoryQuery,
+  useLogoutMutation,
+  useSignInMutation
 } = api;

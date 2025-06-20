@@ -48,7 +48,7 @@ const StudentPage = () => {
   return (
     <div className="max-w-full ">
       <div className="mt-2 flex flex-1">
-        <div className="mt-4 ml-2 mr-4 bg-white h-full rounded-md p-4">
+        <div className="mt-4 ml-2 mr-4 flex-1 bg-white h-full rounded-md p-4">
           <div className="flex items-center justify-between">
             <h4 className="text-2xl font-bold">Students</h4>
             <div className="flex items-center space-x-2">
