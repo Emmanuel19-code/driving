@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Table,
@@ -13,34 +14,100 @@ import {
   Button,
   TextField,
   Collapse,
+  Snackbar,
+  Alert as MuiAlert,
 } from "@mui/material";
-import { useGetAllServicesQuery } from "@/state/api";
+import {
+  useGetAllServicesQuery,
+  useUpdateServiceMutation,
+} from "@/state/api";
+
+// Alert wrapper for Snackbar
+const Alert = React.forwardRef<HTMLDivElement, any>(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+// Define type for a service
+interface Service {
+  id: number;
+  serviceId: string;
+  serviceType: string;
+  fee: string;
+  totalDuration: string;
+  noOfDaysInClass: string;
+  noOfPracticalHours: number;
+  noOfTimesWeekly: number;
+  allowedDays: string;
+  serviceDescription: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const ServiceTable = () => {
-  const { data: services, isError, isLoading } = useGetAllServicesQuery();
+  const { data, isError, isLoading, refetch } = useGetAllServicesQuery();
+  const [updateService, { isLoading: isUpdating }] = useUpdateServiceMutation();
+
+  const services: Service[] = (data as any)?.data ?? [];
+
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<Partial<Service>>({});
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+
+  const handleCloseSnackbar = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
+  };
 
   if (isLoading) return <CircularProgress />;
-  if (isError) return <Typography color="error">Failed to load services</Typography>;
+  if (isError)
+    return <Typography color="error">Failed to load services</Typography>;
 
-  const handleEditClick = (serviceId: string, service: any) => {
+  const handleEditClick = (serviceId: string, service: Service) => {
     setExpandedRowId(expandedRowId === serviceId ? null : serviceId);
-    setFormData(service); // preload existing values
+    setFormData(service);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    console.log("Saving changes:", formData);
-    setExpandedRowId(null);
-    // Connect API mutation here
+  const handleSave = async () => {
+    if (!formData.serviceId) return;
+
+    try {
+      const response = await updateService(formData).unwrap();
+      if (response?.success) {
+        setSnackbarMessage("Service updated successfully");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+        refetch();
+        setExpandedRowId(null);
+      } else {
+        setSnackbarMessage(response?.error || "Update failed");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+    } catch (error: any) {
+      setSnackbarMessage(error?.data?.error || "Something went wrong while updating");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   return (
     <Box sx={{ width: "100%", overflowX: "auto", mt: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+          Refresh Services
+        </Button>
+      </Box>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
@@ -58,7 +125,7 @@ const ServiceTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {services?.map((service) => (
+            {services.map((service) => (
               <React.Fragment key={service.serviceId}>
                 <TableRow>
                   <TableCell>{service.serviceId}</TableCell>
@@ -74,7 +141,9 @@ const ServiceTable = () => {
                     <Button
                       variant="outlined"
                       size="small"
-                      onClick={() => handleEditClick(service.serviceId, service)}
+                      onClick={() =>
+                        handleEditClick(service.serviceId, service)
+                      }
                     >
                       {expandedRowId === service.serviceId ? "Cancel" : "Edit"}
                     </Button>
@@ -83,13 +152,18 @@ const ServiceTable = () => {
 
                 <TableRow>
                   <TableCell colSpan={10} sx={{ p: 0 }}>
-                    <Collapse in={expandedRowId === service.serviceId} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={expandedRowId === service.serviceId}
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <Box
                         sx={{
                           p: 2,
                           display: "grid",
                           gap: 2,
-                          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                          gridTemplateColumns:
+                            "repeat(auto-fit, minmax(250px, 1fr))",
                         }}
                       >
                         <TextField
@@ -154,8 +228,13 @@ const ServiceTable = () => {
                           rows={3}
                         />
                         <Box sx={{ gridColumn: "1 / -1", textAlign: "right" }}>
-                          <Button variant="contained" size="small" onClick={handleSave}>
-                            Save Changes
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleSave}
+                            disabled={isUpdating}
+                          >
+                            {isUpdating ? "Saving..." : "Save Changes"}
                           </Button>
                         </Box>
                       </Box>
@@ -167,6 +246,22 @@ const ServiceTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Snackbar for feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -3,6 +3,7 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import StoreProvider from "@/app/redux";
+import ProtectedRoute from "./ProtectedRoute";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -19,7 +20,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
-      <DashboardLayout>{children}</DashboardLayout>
+      <ProtectedRoute>
+        <DashboardLayout>{children}</DashboardLayout>
+      </ProtectedRoute>
     </StoreProvider>
   );
 };

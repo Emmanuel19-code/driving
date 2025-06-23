@@ -3,7 +3,6 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddServiceData } from "@/interfaces/service";
 import { StudentData } from "@/interfaces/student";
 import { customBaseQuery } from "./customBaseQuery";
-
 import { LoginCredentials } from "@/interfaces/auth";
 import { clearAccessToken } from ".";
 
@@ -58,6 +57,20 @@ export const api = createApi({
       query: () => "students/completed_theory_class",
       providesTags: ["CompletedTheory"],
     }),
+    updateService: build.mutation({
+      query: ({ serviceId, ...updates }) => ({
+        url: `services/update_service/${serviceId}`,
+        method: "PUT",
+        body: updates,
+      }),
+      invalidatesTags: ["Services"],
+    }),
+    getServicesNameAndId:build.query({
+      query:()=>"services/servicesId_and_name",
+    }),
+    getStudentNotStartedPractical:build.query({
+       query:()=>"students/practical-not-started"
+    }),
     logout: build.mutation<void, void>({
       query: () => ({
         url: "system_security/logout",
@@ -93,5 +106,8 @@ export const {
   useAddServiceMutation,
   useStudentsCompletedTheoryQuery,
   useLogoutMutation,
-  useSignInMutation
+  useSignInMutation,
+  useUpdateServiceMutation,
+  useGetServicesNameAndIdQuery,
+  useGetStudentNotStartedPracticalQuery
 } = api;

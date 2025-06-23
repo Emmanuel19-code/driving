@@ -5,6 +5,7 @@ import { useAppDispatch } from "@/app/redux";
 import { LoginCredentials } from "@/interfaces/auth";
 import { useSignInMutation } from "@/state/api";
 import { setAuthData } from "@/state";
+import { Eye, EyeOff } from "lucide-react"; // ✅ Eye icons
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function LoginPage() {
     userName: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false); // ✅ visibility toggle
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,8 +31,6 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const result = await signIn(formData).unwrap();
-      console.log(result);
-      
       if (result.success) {
         dispatch(setAuthData(result.data));
         router.push("/dashboard");
@@ -56,7 +57,7 @@ export default function LoginPage() {
             <input
               type="text"
               id="username"
-              name="userName" 
+              name="userName"
               required
               value={formData.userName}
               onChange={handleChange}
@@ -65,20 +66,28 @@ export default function LoginPage() {
             />
           </div>
 
-          <div>
+          <div className="relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} 
               id="password"
-              name="password" 
+              name="password"
               required
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           <button

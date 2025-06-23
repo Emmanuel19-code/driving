@@ -76,9 +76,9 @@ const Sidebar = () => {
             isCollapsed={isSidebarCollapsed}
           />
           <SidebarLink
-            href="/theoryandpractical"
+            href="/studentStatus"
             icon={Car}
-            label="Theory/Practical"
+            label="Student Status"
             isCollapsed={isSidebarCollapsed}
           />
           <SidebarLink

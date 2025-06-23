@@ -7,17 +7,18 @@ import type {
 } from "@reduxjs/toolkit/query";
 import { clearAccessToken, setAccessToken } from ".";
 
-
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/v1/",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as any).auth.accessToken;
+    const state = getState() as any;
+    const token = state.global?.accessToken; 
+    console.log("token",token)
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
     return headers;
   },
-  credentials: "include", // Send cookies (for refreshToken)
+  credentials: "include",
 });
 
 export const customBaseQuery: BaseQueryFn<
@@ -26,7 +27,8 @@ export const customBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
+  console.log(result);
+  
   // If access token is expired
   if (result.error && result.error.status === 401) {
     const refreshResult = await baseQuery(
