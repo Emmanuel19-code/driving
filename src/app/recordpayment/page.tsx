@@ -1,161 +1,163 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  CircularProgress,
+  Paper,
+  Grid,
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import { useGetStudentNamesAndIdQuery } from "@/state/api";
 
 const RecordPayment = () => {
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [formData, setFormData] = useState({
+    amountPaid: "",
+    paymentMethod: "",
+    phoneNumber: "",
+    reason: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const {
+    data: studentInfo,
+    isError,
+    isLoading,
+  } = useGetStudentNamesAndIdQuery();
+
+ const students = studentInfo?.success ? studentInfo.data : [];
+ console.log(selectedStudent)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+    } catch (err) {
+      setMessage("❌ An error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-full px-4 sm:px-6 lg:px-8">
-      <div className="mt-4 lg:ml-72 bg-white rounded-lg ">
-        <h4 className="bg-[#302394] rounded-t-lg p-2 text-white px-4">
+    <Box
+      sx={{
+        mt: 2,
+        px: { xs: 2, md: 8 },
+        pb: 4,
+        maxHeight: "90vh",
+        overflowY: "auto",
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 2 }}>
+        {" "}
+        {/* reduced padding from 4 to 2 */}
+        <Typography variant="h5" gutterBottom sx={{ color: "#302394", mb: 2 }}>
           Record Payment
-        </h4>
-        <div className="p-4">
-          <form className="mb-2">
-            <div className="flex flex-wrap gap-4 mb-4">
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="first_name"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  First name*
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="John"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="last_name"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Last name*
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Doe"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="other_names"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Other names*
-                </label>
-                <input
-                  type="text"
-                  id="other_names"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Michael"
-                  required
-                />
-              </div>
-            </div>
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Grid container spacing={1}>
+            {" "}
+            {/* reduced spacing from 2 to 1 */}
+            <Grid item xs={12} sm={4}>
+              <Autocomplete
+                value={selectedStudent}
+                onChange={(event, newValue) => setSelectedStudent(newValue)}
+                options={students}
+                getOptionLabel={(option) => option.fullName || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search Student"
+                    variant="outlined"
+                    sx={{ minWidth: 300 }}
+                  />
+                )}
+                isOptionEqualToValue={(option, value) =>
+                  option.studentId === value.studentId
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                name="amountPaid"
+                label="Amount Paid"
+                value={formData.amountPaid}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }} // increased width
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                select
+                name="paymentMethod"
+                label="Payment Method"
+                value={formData.paymentMethod}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }} // increased width
+              >
+                <option value="">Select Method</option>
+                <option value="cash">Cash</option>
+                <option value="mobile_money">Mobile Money</option>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                
+                name="phoneNumber"
+                label="Enter PhoneNumber"
+                InputLabelProps={{ shrink: true }}
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }} // increased width
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                name="reason"
+                label="Reason for Payment"
+                multiline
+                rows={3}
+                value={formData.reason}
+                onChange={handleInputChange}
+                sx={{ minWidth: 600 }} // wider for multiline
+              />
+            </Grid>
+          </Grid>
 
-            <div className="flex flex-wrap gap-4 mb-4">
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="payment_date"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Payment Date
-                </label>
-                <input
-                  type="date"
-                  id="payment_date"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="amount_paid"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Amount Paid
-                </label>
-                <input
-                  type="number"
-                  id="amount_paid"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="100"
-                  min={0}
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="payment_method"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Payment Method*
-                </label>
-                <select
-                  id="payment_method"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  required
-                >
-                  <option value="">Select method</option>
+          {message && (
+            <Typography sx={{ mt: 2 }} color="secondary">
+              {message}
+            </Typography>
+          )}
 
-                  <option value="cash">Cash</option>
-                  <option value="mobile_money">Mobile Money</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex flex-row space-x-4">
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block mb-2 text-sm font-medium text-gray-900 "
-                >
-                  Reason for payment
-                </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  cols={25}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
-                  placeholder="Type here..."
-                ></textarea>
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="amount_paid"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Enter Email
-                </label>
-                <input
-                  type="text"
-                  id="amount_paid"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Enter Email"
-                  required
-                />
-              </div>
-            </div>
-          </form>
-
-          <div className="flex justify-end space-x-2 mt-4">
-            <button className="w-32 border-2 py-1 rounded-md border-[#302394] text-[#302394] hover:bg-[#f0f0f0] transition">
-              Cancel
-            </button>
-            <button className="w-32 border py-1 rounded-md bg-[#302394] text-white hover:bg-[#241b73] transition">
-              Save Payment
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ backgroundColor: "#302394" }}
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Save Payment"
+              )}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
 export default RecordPayment;
-
-//lobah
-//34j0ul1g

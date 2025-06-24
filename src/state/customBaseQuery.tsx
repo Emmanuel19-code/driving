@@ -12,7 +12,6 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as any;
     const token = state.global?.accessToken; 
-    console.log("token",token)
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -27,8 +26,6 @@ export const customBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-  console.log(result);
-  
   // If access token is expired
   if (result.error && result.error.status === 401) {
     const refreshResult = await baseQuery(

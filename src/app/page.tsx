@@ -5,7 +5,12 @@ import { useAppDispatch } from "@/app/redux";
 import { LoginCredentials } from "@/interfaces/auth";
 import { useSignInMutation } from "@/state/api";
 import { setAuthData } from "@/state";
-import { Eye, EyeOff } from "lucide-react"; // ✅ Eye icons
+import { Eye, EyeOff } from "lucide-react";
+
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
+
+const Alert = MuiAlert as React.ElementType;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +22,16 @@ export default function LoginPage() {
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false); // ✅ visibility toggle
+  const [showPassword, setShowPassword] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    type: AlertColor;
+  }>({
+    open: false,
+    message: "",
+    type: "error",
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,22 +47,31 @@ export default function LoginPage() {
       const result = await signIn(formData).unwrap();
       if (result.success) {
         dispatch(setAuthData(result.data));
-        router.push("/dashboard");
+        setSnackbar({ open: true, message: "Login successful", type: "success" });
+        setTimeout(() => router.push("/dashboard"), 1000);
       } else {
-        alert(result.error || "Login failed");
+        setSnackbar({ open: true, message: result.error || "Login failed", type: "error" });
       }
     } catch (err: any) {
-      console.error("Login error:", err);
-      alert(err?.data?.error || "Login failed");
+      setSnackbar({
+        open: true,
+        message: err?.data?.error || "Login failed",
+        type: "error",
+      });
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 relative">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           DRIVING SCHOOL SYSTEM
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -71,7 +94,7 @@ export default function LoginPage() {
               Password
             </label>
             <input
-              type={showPassword ? "text" : "password"} 
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               required
@@ -98,6 +121,23 @@ export default function LoginPage() {
           </button>
         </form>
       </div>
+
+      {/* Snackbar Positioned at Top Center */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.type}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
