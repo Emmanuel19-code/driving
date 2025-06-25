@@ -15,6 +15,7 @@ export const api = createApi({
     "TimeSlots",
     "Services",
     "CompletedTheory",
+    "FuelRecords",
   ],
   endpoints: (build) => ({
     //adding students
@@ -73,28 +74,39 @@ export const api = createApi({
       }),
       invalidatesTags: ["Services"],
     }),
-    getServicesNameAndId:build.query({
-      query:()=>"services/servicesId_and_name",
+    getServicesNameAndId: build.query({
+      query: () => "services/servicesId_and_name",
     }),
-    getStudentNotStartedPractical:build.query({
-       query:()=>"students/practical-not-started"
+    getStudentNotStartedPractical: build.query({
+      query: () => "students/practical-not-started",
     }),
-    getStudentNamesAndId:build.query({
-      query:()=>"students/student_names_studentId_only"
+    getStudentNamesAndId: build.query({
+      query: () => "students/student_names_studentId_only",
     }),
-    makePayment:build.mutation({
-      query:(paymentData)=>({
-         url:"payment/make_payment",
-         method:"POST",
-         body:paymentData
-      })
+    makePayment: build.mutation({
+      query: (paymentData) => ({
+        url: "payment/make_payment",
+        method: "POST",
+        body: paymentData,
+      }),
     }),
-    recordFuel:build.mutation({
-      query:(recordData)=>({
-        url:"companycar/record_fuel_refill",
-        method:"POST",
-        body:recordData
-      })
+    recordFuel: build.mutation({
+      query: (recordData) => ({
+        url: "companycar/record_fuel_refill",
+        method: "POST",
+        body: recordData,
+      }),
+      invalidatesTags: ["FuelRecords"],
+    }),
+    getFuelRecords: build.query({
+      query: ({ startDate, endDate } = {}) => {
+        const params = new URLSearchParams();
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+
+        return `companycar/all_fuel_records?${params.toString()}`;
+      },
+      providesTags: ["FuelRecords"],
     }),
     logout: build.mutation<void, void>({
       query: () => ({
@@ -111,13 +123,13 @@ export const api = createApi({
         }
       },
     }),
-    signIn:build.mutation({
-       query:(credentials:LoginCredentials)=>({
-         url:"system_security/login",
-         method:"POST",
-         body:credentials
-       })
-    })
+    signIn: build.mutation({
+      query: (credentials: LoginCredentials) => ({
+        url: "system_security/login",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
   }),
 });
 
@@ -137,5 +149,6 @@ export const {
   useGetStudentNotStartedPracticalQuery,
   useGetStudentNamesAndIdQuery,
   useMakePaymentMutation,
-  useRecordFuelMutation
+  useRecordFuelMutation,
+  useGetFuelRecordsQuery,
 } = api;
