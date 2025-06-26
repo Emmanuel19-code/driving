@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useGetAllCarsQuery, useRecordFuelMutation } from "@/state/api";
+import {  useGetCarsRegistrationNumberQuery, useRecordFuelMutation } from "@/state/api";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor } from "@mui/material/Alert";
 
@@ -9,7 +9,7 @@ const Alert = React.forwardRef(function Alert(props: any, ref: any) {
 });
 
 const RecordForm = () => {
-  const { data: cars, isError, isLoading } = useGetAllCarsQuery();
+  const { data: cars, isError, isLoading } = useGetCarsRegistrationNumberQuery();
   const [recordFuel] = useRecordFuelMutation();
 
   const [formData, setFormData] = useState({

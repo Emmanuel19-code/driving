@@ -1,144 +1,194 @@
 "use client";
-import { Eye, Plus } from "lucide-react";
-import React, { useMemo, useState } from "react";
-import RecordForm from "./recordForm";
-import { useGetFuelRecordsQuery } from "@/state/api";
+
+import React, { useState } from "react";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Box,
+  CircularProgress,
+} from "@mui/material";
+import { Plus } from "lucide-react";
+import { useGetFuelRecordsQuery, useUpdateFuelRecordMutation } from "@/state/api";
+import RecordForm from "./recordForm"; // Your custom record form component
 
 const FuelPage = () => {
+  const { data: fuelRecords = { data: [] }, isLoading, isError } = useGetFuelRecordsQuery();
+  const [updateFuelRecord, { isLoading: isUpdating }] = useUpdateFuelRecordMutation();
+ console.log(fuelRecords)
   const [showForm, setShowForm] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const queryParams = useMemo(
-    () => ({
-      startDate: startDate || undefined,
-      endDate: endDate || undefined,
-    }),
-    [startDate, endDate]
-  );
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
 
-  const {
-    data: fuelRecords,
-    isLoading,
-    isError,
-  } = useGetFuelRecordsQuery(queryParams);
+  const handleEditClick = (record: any) => {
+    setEditingRecord({ ...record });
+    setOpenEditDialog(true);
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setEditingRecord((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      await updateFuelRecord(editingRecord).unwrap();
+      setOpenEditDialog(false);
+    } catch (error) {
+      console.error("Failed to update record:", error);
+    }
+  };
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 70 },
+    {
+      field: "carRegistrationNumber",
+      headerName: "Car Number",
+      width: 180,
+    },
+    {
+      field: "refilledBy",
+      headerName: "Refilled By",
+      width: 160,
+    },
+    {
+      field: "amountloaded",
+      headerName: "Amount Loaded (₵)",
+      width: 180,
+    },
+    {
+      field: "litres",
+      headerName: "Litres",
+      width: 120,
+    },
+    {
+  field: "createdAt",
+  headerName: "Date Purchased",
+  width: 200,
+  valueGetter: (params) =>
+    params?.row?.createdAt
+      ? new Date(params.row.createdAt).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "N/A",
+}
+,
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => handleEditClick(params.row)}
+        >
+          Edit
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div className="p-4 bg-gray-100 ">
-      <div className="bg-white rounded shadow-md p-4 sm:p-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
-            Fuel Records
-          </h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center justify-center gap-2 bg-[#302394] hover:bg-[#1f176e] text-white text-sm px-4 py-2 rounded-md transition duration-150"
-          >
-            {showForm ? (
-              <Eye className="w-5 h-5" />
-            ) : (
-              <Plus className="w-5 h-5" />
-            )}
-            <span className="whitespace-nowrap">
-              {showForm ? "View Records" : "Record Fuel"}
-            </span>
-          </button>
-        </div>
-
-        {/* Date Filters */}
-        {!showForm && (
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
-            <div className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">Start Date</label>
-              <input
-                type="date"
-                className="border px-3 py-2 rounded-md text-sm"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">End Date</label>
-              <input
-                type="date"
-                className="border px-3 py-2 rounded-md text-sm"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
+    <div className="max-w-full">
+      <div className="mt-2 flex flex-1">
+        <div className="mt-4 ml-2 mr-4 bg-white rounded-md p-4 w-full">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <h4 className="text-3xl font-medium">Fuel Records</h4>
+            <Button
+              className="w-48 flex items-center justify-center bg-[#302394] text-white text-sm rounded-md py-2"
+              onClick={() => setShowForm((prev) => !prev)}
+              variant="contained"
+              sx={{ backgroundColor: "#302394", textTransform: "none" }}
+            >
+              <Plus className="w-5 mr-1" />
+              {showForm ? "Hide Form" : "Record Fuel"}
+            </Button>
           </div>
-        )}
 
-        {/* Table or Form */}
-        <div className="w-full">
-          {showForm ? (
-            <div className="bg-gray-50 border rounded-md p-4 sm:p-6">
+          {/* Record Form */}
+          {showForm && (
+            <div className="mt-6 bg-gray-50 border rounded-md p-4">
               <RecordForm />
             </div>
-          ) : isLoading ? (
-            <div className="text-center py-10 text-gray-500">
-              Loading fuel records...
-            </div>
-          ) : isError ? (
-            <div className="text-center py-10 text-red-500">
-              Failed to load records.
-            </div>
-          ) : (
-            <div className="w-full overflow-x-auto h-80 scrollbar-hide">
-              <table className="min-w-full text-sm divide-y divide-gray-200">
-                <thead className="bg-gray-50 text-left whitespace-nowrap">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-gray-600">#</th>
-                    <th className="px-4 py-3 font-semibold text-gray-600">
-                      Car Number
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-600">
-                      Refilled By
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-600">
-                      Amount Loaded (₵)
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-600">
-                      Litres
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-gray-600">
-                      Date Purchased
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {fuelRecords?.data?.map((record, index) => (
-                    <tr key={record.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">{index + 1}</td>
-                      <td className="px-4 py-3">
-                        {record.carRegistrationNumber}
-                      </td>
-                      <td className="px-4 py-3">{record.refilledBy}</td>
-                      <td className="px-4 py-3">₵{record.amountloaded}</td>
-                      <td className="px-4 py-3">{record.litres}</td>
-                      <td className="px-4 py-3">
-                        {new Date(record.createdAt).toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {fuelRecords?.data?.length === 0 && (
-                <div className="text-center text-gray-500 py-6">
-                  No fuel records found.
-                </div>
-              )}
-            </div>
           )}
+
+          {/* Table */}
+          <div className="mt-6" style={{ height: 420, width: "100%" }}>
+            {isLoading ? (
+              <div className="flex justify-center py-6">
+                <CircularProgress />
+              </div>
+            ) : isError ? (
+              <div className="text-red-500 text-center">Failed to fetch records</div>
+            ) : (
+              <DataGrid
+                rows={fuelRecords.data}
+                columns={columns}
+                pageSizeOptions={[5]}
+                className="bg-white shadow rounded-lg border border-gray-200 !text-gray-700"
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Edit Fuel Record</DialogTitle>
+        <DialogContent>
+          <Box className="flex flex-col gap-4 mt-1">
+            <TextField
+              label="Amount Loaded"
+              variant="outlined"
+              value={editingRecord?.amountloaded || ""}
+              onChange={(e) => handleChange("amountloaded", e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Litres"
+              variant="outlined"
+              value={editingRecord?.litres || ""}
+              onChange={(e) => handleChange("litres", e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Refilled By"
+              variant="outlined"
+              value={editingRecord?.refilledBy || ""}
+              onChange={(e) => handleChange("refilledBy", e.target.value)}
+              fullWidth
+              size="small"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={isUpdating}
+          >
+            {isUpdating ? "Saving..." : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

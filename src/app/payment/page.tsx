@@ -12,66 +12,62 @@ const columns: GridColDef[] = [
     headerName: "Amount",
     width: 150,
     type: "number",
-    valueGetter: (value, row) => `$${row.price}`,
+    valueGetter: (_, row) => `$${row.price}`,
   },
   {
-    field: "rating",
+    field: "paymentMethod",
     headerName: "Payment Method",
     width: 150,
-    type: "number",
-    valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
+    valueGetter: (_, row) => row.paymentMethod || "N/A",
   },
   {
-    field: "stockQuantity",
-    headerName: " Description/Reason",
-    width: 150,
-    type: "number",
-    valueGetter: (value, row) => (row.rating ? row.stockQuantity : "N/A"),
+    field: "description",
+    headerName: "Description/Reason",
+    width: 200,
+    valueGetter: (_, row) => row.description || "N/A",
   },
   {
-    field: "totalSold",
+    field: "recordedBy",
     headerName: "Recorded By",
-    width: 150,
-    type: "number",
-    valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
+    width: 180,
+    valueGetter: (_, row) => row.recordedBy || "N/A",
   },
 ];
 
 const PaymentPage = () => {
   const router = useRouter();
+
   return (
-    <div className="max-w-full ">
-      <div className="mt-4 ml-72 mr-4   bg-white rounded-md p-4">
+    <div className="flex flex-col p-6  mr-6 mt-4">
+      <div className="flex flex-col gap-4 bg-white rounded-xl shadow p-6">
         <div className="flex flex-row items-center justify-between">
-          <h4 className="text-3xl font-medium">Payments Records</h4>
-          <div className="flex flex-row items-center">
-            <button className="w-24 m-1 text-sm font-medium  border-black rounded-md cursor-pointer py-2 border-2">
+          <h1 className="text-2xl font-semibold text-gray-800">Payments Records</h1>
+          <div className="flex gap-2">
+            <button className="px-4 py-2 text-sm border border-black rounded-md">
               Filters
             </button>
-            <button className="w-24 m-1 text-sm font-medium  border-black  rounded-md cursor-pointer py-2 border-2">
+            <button className="px-4 py-2 text-sm border border-black rounded-md">
               Search
             </button>
             <button
-              className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#302394] rounded-md"
               onClick={() => router.push("/recordpayment")}
             >
-              <Plus className="w-5" />
+              <Plus className="w-4 h-4" />
               Record Payment
             </button>
           </div>
         </div>
-        {/*Info Cards */}
-        <div className="flex flex-row justify-between">
-          {/*<InfoCard />*/}
-          {/*<InfoCard />*/}
-          {/*<InfoCard />*/}
-        </div>
 
-        {/*main table */}
-        <DataGrid
-          columns={columns}
-          className="bg-white shadow rounded-lg border border-gray-200 mt-5 !text-gray-700"
-        />
+        {/* Optional: info cards can be added here */}
+
+        <div className="h-[550px] w-full">
+          <DataGrid
+            columns={columns}
+            rows={[]} // Replace with your data
+            className="bg-white border border-gray-200 text-gray-800"
+          />
+        </div>
       </div>
     </div>
   );

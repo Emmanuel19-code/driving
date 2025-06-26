@@ -1,8 +1,8 @@
-import DashboardWrapper from "@/components/DashboardWrapper";
+import DashboardWrapperTwo from "@/components/DashboardWrapperTwo";
 import React from "react";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
-  return <DashboardWrapper>{children}</DashboardWrapper>;
+  return <DashboardWrapperTwo>{children}</DashboardWrapperTwo>;
 };
 
 export default layout;

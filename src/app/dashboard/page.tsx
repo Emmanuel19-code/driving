@@ -1,61 +1,74 @@
-"use client";
-import { Download, UserCircle } from "lucide-react";
 import React from "react";
-import InstructorCard from "./InstructorCard";
-import SchedulesCard from "./SchedulesCard";
-import StudentCard from "./StudentCard";
-import RevenueSummary from "./RevenueSummary";
+import StatCard from "./StatCard";
+import {
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+  User,
+} from "lucide-react";
 import AlertCard from "./AlertCard";
+import UpcomingPracticalSession from "./UpcomingPracticalSession";
 
-
-const DashboardPage = () => {
+const Dashboard = () => {
   return (
-    <div className="max-w-full ">
-      <div className="mt-2 bg-green-500 flex flex-1 flex-row">
-        <div className="w-9/12">
-          <div className="bg-white shadow p-2 m-2 h-44  rounded w-full">
-            <div className="flex flex-row ml-2 justify-between items-center">
-              <div>
-                <h4 className="text-lg font-medium">Overview</h4>
-                <p className="text-[8px] text-gray-400">
-                  {" "}
-                  Last updated June 20, 7:30am
-                </p>
-              </div>
-              <div className="flex cursor-pointer flex-row items-center w-24 justify-between px-2 rounded border-black border">
-                <p>Report</p>
-                <Download className="w-4" />
-              </div>
-            </div>
-            <div className="flex flex-row  justify-between mt-2.5">
-              <StudentCard />
-              <InstructorCard />
-              <SchedulesCard />
-            </div>
-          </div>
-          <RevenueSummary />
-          <div className="bg-white p-2 shadow m-2 h-40 rounded w-full">
-            <div className="flex flex-row justify-between items-center">
-              <div>
-                <h4 className="text-lg font-medium">Overview</h4>
-                <p className="text-[8px] text-gray-400">
-                  {" "}
-                  Last updated June 20, 7:30am
-                </p>
-              </div>
-              <div className="flex flex-row items-center w-24 justify-between px-2 rounded border-black border">
-                <p>Report</p>
-                <Download className="w-4" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="ml-5 mt-2">
-           <AlertCard/>
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-2">
+      {/* StatCard 1 */}
+      <div className="w-full">
+        <StatCard
+          title="Students Population"
+          primaryIcon={<User className="text-blue-600 w-4 h-4" />}
+          dateRange="22 - 29 October 2023"
+          details={[
+            {
+              title: "Total Population",
+              amount: "175.00",
+              changePercentage: 131,
+              IconComponent: TrendingUp,
+            },
+            {
+              title: "Males",
+              amount: "175.00",
+              changePercentage: 131,
+              IconComponent: TrendingUp,
+            },
+            {
+              title: "Females",
+              amount: "147.00",
+              changePercentage: -56,
+              IconComponent: TrendingDown,
+            },
+          ]}
+        />
+      </div>
+      <div className="w-full">
+        <StatCard
+          title="Cash Flow"
+          primaryIcon={<DollarSign className="text-blue-600 w-4 h-4" />}
+          dateRange="22 - 29 October 2023"
+          details={[
+            {
+              title: "Money Received For Services",
+              amount: "1000.00",
+              changePercentage: 20,
+              IconComponent: TrendingUp,
+            },
+            {
+              title: "Expenses",
+              amount: "200.00",
+              changePercentage: -10,
+              IconComponent: TrendingDown,
+            },
+          ]}
+        />
+      </div>
+      <div className="w-full">
+        <AlertCard />
+      </div>
+      <div className="w-full">
+        <UpcomingPracticalSession/>
       </div>
     </div>
   );
 };
 
-export default DashboardPage;
+export default Dashboard;

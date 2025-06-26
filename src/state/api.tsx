@@ -5,17 +5,19 @@ import { StudentData } from "@/interfaces/student";
 import { customBaseQuery } from "./customBaseQuery";
 import { LoginCredentials } from "@/interfaces/auth";
 import { clearAccessToken } from ".";
+import { AddCarData } from "@/interfaces/car";
 
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
   tagTypes: [
     "Students",
-    "CompanyCars",
+    "CarRegistrationNumber",
     "TimeSlots",
     "Services",
     "CompletedTheory",
     "FuelRecords",
+    "CompanyCars",
   ],
   endpoints: (build) => ({
     //adding students
@@ -38,9 +40,9 @@ export const api = createApi({
       query: (name) => `students/search_student?name=${name}`,
     }),
     //get only the car registration number
-    getAllCars: build.query({
+    getCarsRegistrationNumber: build.query({
       query: () => "companycar/get_car_registration_number",
-      providesTags: ["CompanyCars"],
+      providesTags: ["CarRegistrationNumber"],
     }),
     //get all timeSlots generated
     getTimeSlots: build.query({
@@ -108,6 +110,43 @@ export const api = createApi({
       },
       providesTags: ["FuelRecords"],
     }),
+    updateFuelRecord: build.mutation({
+      query: (updateData) => ({
+        url: `companycar/update_fuel_record/${updateData.id}`,
+        method: "PUT",
+        body: updateData,
+      }),
+      invalidatesTags: ["FuelRecords"],
+    }),
+    addCarInSystem: build.mutation({
+      query: (carData: AddCarData) => ({
+        url: "companycar/add_car",
+        method: "POST",
+        body: carData,
+      }),
+      // invalidatesTags: ["CompanyCars"]
+    }),
+    getAllCarData: build.query({
+      query: () => "companycar/all_cars",
+      transformResponse: (res: { success: boolean; data?: any[] }) => {
+        return res.success ? res.data : [];
+      },
+      providesTags: ["CompanyCars"],
+    }),
+    updateCarData: build.mutation({
+      query: (updateData) => ({
+        url: "",
+        method: "PUT",
+        body: updateData,
+      }),
+    }),
+    markClassStarted: build.mutation({
+      query: (studentId) => ({
+        url: `students/${studentId}/mark-class-started`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Students"],
+    }),
     logout: build.mutation<void, void>({
       query: () => ({
         url: "system_security/logout",
@@ -137,7 +176,7 @@ export const {
   useAddStudentsMutation,
   useGetStudentsQuery,
   useGetSearchStudentQuery,
-  useGetAllCarsQuery,
+  useGetCarsRegistrationNumberQuery,
   useGetTimeSlotsQuery,
   useGetAllServicesQuery,
   useAddServiceMutation,
@@ -151,4 +190,9 @@ export const {
   useMakePaymentMutation,
   useRecordFuelMutation,
   useGetFuelRecordsQuery,
+  useAddCarInSystemMutation,
+  useGetAllCarDataQuery,
+  useUpdateCarDataMutation,
+  useMarkClassStartedMutation,
+  useUpdateFuelRecordMutation
 } = api;
