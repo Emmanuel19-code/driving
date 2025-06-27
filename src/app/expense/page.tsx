@@ -54,7 +54,7 @@ const ExpensePage = () => {
             </button>
             <button
               className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
-              onClick={() => router.push("/recordpayment")}
+              onClick={() => router.push("/recordexpense")}
             >
               <Plus className="w-5" />
               Record Expense

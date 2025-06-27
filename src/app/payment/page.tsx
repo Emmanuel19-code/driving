@@ -3,40 +3,47 @@ import { Plus } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useGetAllPaymentsQuery } from "@/state/api";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "Student Id", width: 150 },
-  { field: "name", headerName: "Student Name", width: 200 },
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "studentName", headerName: "Student Name", width: 150 },
   {
-    field: "price",
-    headerName: "Amount",
-    width: 150,
-    type: "number",
-    valueGetter: (_, row) => `$${row.price}`,
+    field: "amountPaid",
+    headerName: "Amount Paid",
+    width: 150
   },
   {
     field: "paymentMethod",
     headerName: "Payment Method",
     width: 150,
-    valueGetter: (_, row) => row.paymentMethod || "N/A",
   },
   {
-    field: "description",
-    headerName: "Description/Reason",
+    field: "reason",
+    headerName: "Reason",
     width: 200,
-    valueGetter: (_, row) => row.description || "N/A",
   },
   {
-    field: "recordedBy",
-    headerName: "Recorded By",
+    field: "createdAt",
+    headerName: "Date",
     width: 180,
-    valueGetter: (_, row) => row.recordedBy || "N/A",
+    valueGetter: (params) =>
+      new Date(params?.row?.createdAt).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   },
 ];
 
+
 const PaymentPage = () => {
   const router = useRouter();
-
+ const {data:payments,isError,isLoading} = useGetAllPaymentsQuery();
+ console.log(payments);
+ 
   return (
     <div className="flex flex-col p-6  mr-6 mt-4">
       <div className="flex flex-col gap-4 bg-white rounded-xl shadow p-6">
@@ -59,12 +66,13 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        {/* Optional: info cards can be added here */}
+       
 
         <div className="h-[550px] w-full">
           <DataGrid
             columns={columns}
-            rows={[]} // Replace with your data
+            rows={payments?.data ?? []}
+            getRowId={(row) => row.paymentId}
             className="bg-white border border-gray-200 text-gray-800"
           />
         </div>

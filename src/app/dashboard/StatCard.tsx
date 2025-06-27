@@ -4,8 +4,8 @@ import React from "react";
 type StatDetail = {
   title: string;
   amount: string;
-  changePercentage: number;
-  IconComponent: LucideIcon;
+  changePercentage?: number;
+  IconComponent?: LucideIcon;
 };
 
 type StatCardProps = {
@@ -21,9 +21,9 @@ const StatCard = ({
   details,
   dateRange,
 }: StatCardProps) => {
-  const formatPercentage = (value: number) => {
+  const formatPercentage = (value?: number) => {
     const signal = value >= 0 ? "+" : "";
-    return `${signal}${value.toFixed()}%`;
+    return `${signal}${value?.toFixed()}%`;
   };
   const getChangeColor = (value: number) =>
     value >= 0 ? "text-green-500" : "text-red-500";
@@ -34,28 +34,39 @@ const StatCard = ({
           <h2 className="font-semibold text-lg text-gray-700">{title}</h2>
           <span className="text-xs text-gray-400">{dateRange}</span>
         </div>
-        <hr/>
+        <hr />
       </div>
       <div className="flex mb-6 items-center justify-around gap-4 px-5">
         <div className="rounded-full p-4 bg-blue-50 border-sky-300 border-[1px]">
-                {primaryIcon}
+          {primaryIcon}
         </div>
         <div className="flex-1">
-            {
-                details.map((detail,index)=>(
-                    <React.Fragment key={index}>
-                        <div className="flex items-center justify-between my-4">
-                            <span className="text-gray-500">{detail.title}</span>
-                            <span className="font-bold text-gray-800">{detail.amount}</span>
-                            <div className="flex items-center">
-                                <detail.IconComponent className={`w-4 h-4 mr-1 ${getChangeColor(detail.changePercentage)}`}/>
-                                <span className={`font-medium ${getChangeColor(detail.changePercentage)}`}>{formatPercentage(detail.changePercentage)}</span>
-                            </div>
-                        </div>
-                        {index < details.length - 1 && <hr/>}
-                    </React.Fragment>
-                ))
-            }
+          {details.map((detail, index) => (
+            <React.Fragment key={index}>
+              <div className="flex items-center justify-between my-4">
+                <span className="text-gray-500">{detail.title}</span>
+                <span className="font-bold text-gray-800">{detail.amount}</span>
+                {detail.IconComponent &&
+                  detail.changePercentage !== undefined && (
+                    <div className="flex items-center">
+                      <detail.IconComponent
+                        className={`w-4 h-4 mr-1 ${getChangeColor(
+                          detail.changePercentage
+                        )}`}
+                      />
+                      <span
+                        className={`font-medium ${getChangeColor(
+                          detail.changePercentage
+                        )}`}
+                      >
+                        {formatPercentage(detail.changePercentage)}
+                      </span>
+                    </div>
+                  )}
+              </div>
+              {index < details.length - 1 && <hr />}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>

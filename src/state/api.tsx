@@ -92,6 +92,9 @@ export const api = createApi({
         body: paymentData,
       }),
     }),
+    getAllPayments:build.query({
+      query:()=>"payment/payments_received"
+    }),
     recordFuel: build.mutation({
       query: (recordData) => ({
         url: "companycar/record_fuel_refill",
@@ -147,6 +150,12 @@ export const api = createApi({
       }),
       invalidatesTags: ["Students"],
     }),
+    getStudentStat:build.query({
+      query:()=>"students/population_info"
+    }),
+    getPaymentForThisYear:build.query({
+      query:()=>"payment/total_payment_this_year"
+    }),
     logout: build.mutation<void, void>({
       query: () => ({
         url: "system_security/logout",
@@ -194,5 +203,8 @@ export const {
   useGetAllCarDataQuery,
   useUpdateCarDataMutation,
   useMarkClassStartedMutation,
-  useUpdateFuelRecordMutation
+  useUpdateFuelRecordMutation,
+  useGetStudentStatQuery,
+  useGetAllPaymentsQuery,
+  useGetPaymentForThisYearQuery
 } = api;
