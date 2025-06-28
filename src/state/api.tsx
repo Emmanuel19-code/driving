@@ -1,9 +1,7 @@
-// src/state/api.ts
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddServiceData } from "@/interfaces/service";
 import { StudentData } from "@/interfaces/student";
 import { customBaseQuery } from "./customBaseQuery";
-
 import { LoginCredentials } from "@/interfaces/auth";
 import { clearAccessToken } from ".";
 

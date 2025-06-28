@@ -12,6 +12,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/v1/",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.accessToken;
+    console.log("token",token)
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -38,13 +39,11 @@ export const customBaseQuery: BaseQueryFn<
     if (refreshResult.data) {
       const newAccessToken = (refreshResult.data as any).accessToken;
       api.dispatch(setAccessToken(newAccessToken));
-
       // Retry original request with new token
       result = await baseQuery(args, api, extraOptions);
     } else {
       console.log("Refresh token failed. Logging out user.");
       api.dispatch(clearAccessToken());
-
       // Return a proper error structure to satisfy type requirements
       return {
         error: {
