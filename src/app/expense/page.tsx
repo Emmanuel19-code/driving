@@ -40,8 +40,9 @@ const columns: GridColDef[] = [
 const ExpensePage = () => {
   const router = useRouter();
   return (
-    <div className="max-w-full ">
-      <div className="mt-4 ml-72 mr-4   bg-white rounded-md p-4">
+    <div className="p-4 bg-gray-100 ">
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6">
+        {/* Header */}
         <div className="flex flex-row items-center justify-between">
           <h4 className="text-3xl font-medium">Expense Records</h4>
           <div className="flex flex-row items-center">
@@ -53,25 +54,31 @@ const ExpensePage = () => {
             </button>
             <button
               className="w-36 justify-center flex flex-row items-center bg-[#302394] text-white m-1 text-sm rounded-md cursor-pointer py-2 border"
-              onClick={() => router.push("/recordpayment")}
+              onClick={() => router.push("/recordexpense")}
             >
               <Plus className="w-5" />
               Record Expense
             </button>
           </div>
         </div>
-        {/*Info Cards */}
-        <div className="flex flex-row justify-between">
-          {/*<InfoCard />*/}
-          {/*<InfoCard />*/}
-          {/*<InfoCard />*/}
-        </div>
 
-        {/*main table */}
-        <DataGrid columns={columns}/>
+        {/* Content */}
+        <div className="w-full">
+          
+            <div className="w-full overflow-x-auto">
+              <div style={{ minWidth: "100px", height: 430 }}>
+                <DataGrid
+                 /// rows={fuelRecords?.data || []}
+                  columns={columns}
+                  pageSizeOptions={[5]}
+                  disableRowSelectionOnClick
+                />
+              </div>
+            </div>
+          
+        </div>
       </div>
     </div>
   );
 };
-
 export default ExpensePage;

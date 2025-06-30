@@ -1,161 +1,247 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  CircularProgress,
+  Paper,
+  Grid,
+  MenuItem,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import {
+  useGetStudentNamesAndIdQuery,
+  useMakePaymentMutation,
+} from "@/state/api";
+
+const paymentReasons = [
+  { label: "Driving School Service", value: "service_payment" },
+  { label: "Driver’s License Fee", value: "license_fee" },
+  { label: "Other", value: "other" },
+];
 
 const RecordPayment = () => {
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [formData, setFormData] = useState({
+    amountPaid: "",
+    paymentMethod: "",
+    phoneNumber: "",
+    reason: "",
+    otherReasonText: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const { data: studentInfo } = useGetStudentNamesAndIdQuery();
+  const [makePayment] = useMakePaymentMutation();
+
+  const students = studentInfo?.success ? studentInfo.data : [];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudent) {
+      setSnackbar({
+        open: true,
+        message: "Please select a student.",
+        severity: "error",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+        ...formData,
+        studentId: selectedStudent.studentId,
+        reason:
+          formData.reason === "other"
+            ? formData.otherReasonText
+            : formData.reason,
+      };
+
+      const response = await makePayment(payload).unwrap();
+
+      if (response.success) {
+        setSnackbar({
+          open: true,
+          message: "✅ Payment recorded successfully!",
+          severity: "success",
+        });
+
+        // Optionally reset form
+        setFormData({
+          amountPaid: "",
+          paymentMethod: "",
+          phoneNumber: "",
+          reason: "",
+          otherReasonText: "",
+        });
+        setSelectedStudent(null);
+      } else {
+        throw new Error(response.error || "Payment failed");
+      }
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error?.message || "❌ An error occurred.",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-full px-4 sm:px-6 lg:px-8">
-      <div className="mt-4 lg:ml-72 bg-white rounded-lg ">
-        <h4 className="bg-[#302394] rounded-t-lg p-2 text-white px-4">
+    <Box
+      sx={{
+        mt: 2,
+        px: { xs: 2, md: 8 },
+        pb: 4,
+        maxHeight: "90vh",
+        overflowY: "auto",
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom sx={{ color: "#302394", mb: 2 }}>
           Record Payment
-        </h4>
-        <div className="p-4">
-          <form className="mb-2">
-            <div className="flex flex-wrap gap-4 mb-4">
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="first_name"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  First name*
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="John"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="last_name"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Last name*
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Doe"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="other_names"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Other names*
-                </label>
-                <input
-                  type="text"
-                  id="other_names"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Michael"
-                  required
-                />
-              </div>
-            </div>
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={4}>
+              <Autocomplete
+                value={selectedStudent}
+                onChange={(event, newValue) => setSelectedStudent(newValue)}
+                options={students}
+                getOptionLabel={(option) => option.fullName || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search Student"
+                    variant="outlined"
+                    sx={{ minWidth: 300 }}
+                  />
+                )}
+                isOptionEqualToValue={(option, value) =>
+                  option.studentId === value.studentId
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                name="amountPaid"
+                label="Amount Paid"
+                value={formData.amountPaid}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                select
+                name="paymentMethod"
+                label="Payment Method"
+                value={formData.paymentMethod}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }}
+              >
+                <MenuItem value="">Select Method</MenuItem>
+                <MenuItem value="cash">Cash</MenuItem>
+                <MenuItem value="mobile_money">Mobile Money</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                name="phoneNumber"
+                label="Phone Number"
+                InputLabelProps={{ shrink: true }}
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                select
+                name="reason"
+                label="Reason for Payment"
+                value={formData.reason}
+                onChange={handleInputChange}
+                sx={{ minWidth: 300 }}
+              >
+                {paymentReasons.map((reason) => (
+                  <MenuItem key={reason.value} value={reason.value}>
+                    {reason.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
 
-            <div className="flex flex-wrap gap-4 mb-4">
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="payment_date"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Payment Date
-                </label>
-                <input
-                  type="date"
-                  id="payment_date"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  required
+            {formData.reason === "other" && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name="otherReasonText"
+                  label="Specify Other Reason"
+                  multiline
+                  rows={3}
+                  value={formData.otherReasonText}
+                  onChange={handleInputChange}
+                  sx={{ minWidth: 600 }}
                 />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="amount_paid"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Amount Paid
-                </label>
-                <input
-                  type="number"
-                  id="amount_paid"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="100"
-                  min={0}
-                  required
-                />
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="payment_method"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Payment Method*
-                </label>
-                <select
-                  id="payment_method"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  required
-                >
-                  <option value="">Select method</option>
+              </Grid>
+            )}
+          </Grid>
 
-                  <option value="cash">Cash</option>
-                  <option value="mobile_money">Mobile Money</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex flex-row space-x-4">
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block mb-2 text-sm font-medium text-gray-900 "
-                >
-                  Reason for payment
-                </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  cols={25}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
-                  placeholder="Type here..."
-                ></textarea>
-              </div>
-              <div className="w-full md:w-[32%]">
-                <label
-                  htmlFor="amount_paid"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Enter Email
-                </label>
-                <input
-                  type="text"
-                  id="amount_paid"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-                  placeholder="Enter Email"
-                  required
-                />
-              </div>
-            </div>
-          </form>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ backgroundColor: "#302394" }}
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Save Payment"
+              )}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
 
-          <div className="flex justify-end space-x-2 mt-4">
-            <button className="w-32 border-2 py-1 rounded-md border-[#302394] text-[#302394] hover:bg-[#f0f0f0] transition">
-              Cancel
-            </button>
-            <button className="w-32 border py-1 rounded-md bg-[#302394] text-white hover:bg-[#241b73] transition">
-              Save Payment
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 
 export default RecordPayment;
-
-//lobah
-//34j0ul1g

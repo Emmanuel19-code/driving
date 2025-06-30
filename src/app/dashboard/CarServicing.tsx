@@ -3,7 +3,7 @@ import React from 'react'
 
 const CarServicing = () => {
   return (
-    <div className="p-2 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+    <div className="p-2 bg-purple-50 rounded-lg m-1 border-l-4 border-purple-500">
           <div className="flex justify-between items-start">
             <p className="font-medium text-xs text-purple-800">SERVICING DUE</p>
             <span className="text-[8px] bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">

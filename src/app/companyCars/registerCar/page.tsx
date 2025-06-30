@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { AddCarData } from "@/interfaces/car";
+import { useAddCarInSystemMutation } from "@/state/api";
 
 const RegisterCarPage = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const RegisterCarPage = () => {
     message: "",
     severity: "success" as "success" | "error",
   });
-
+ const [addCar] = useAddCarInSystemMutation()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
@@ -43,7 +44,7 @@ const RegisterCarPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addService(formData).unwrap();
+      await addCar(formData).unwrap();
       setSnackbar({
         open: true,
         message: "Service registered successfully.",

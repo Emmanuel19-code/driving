@@ -1,11 +1,24 @@
+"use client";
 import { StudentData } from "@/interfaces/student";
+import { useGetServicesNameAndIdQuery } from "@/state/api";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type FormProps = {
-  onCreate: (formData: StudentData) => void;
+  onCreate: (formData: StudentData) => Promise<{ success: boolean; message: string }>;
 };
 
+const Alert = React.forwardRef<HTMLDivElement, any>(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const Form = ({ onCreate }: FormProps) => {
+  const router = useRouter();
+  const { data: services } = useGetServicesNameAndIdQuery();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -14,173 +27,197 @@ const Form = ({ onCreate }: FormProps) => {
     email: "",
     phoneOne: "",
     phoneTwo: "",
-    serviceType: "",
+    serviceId: "",
   });
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
-    onCreate(formData);
+    setLoading(true);
+    try {
+      const result = await onCreate(formData);
+      setSnackbar({
+        open: true,
+        message: result.message,
+        severity: result.success ? "success" : "error",
+      });
+
+      if (result.success) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          otherName: "",
+          gender: "",
+          email: "",
+          phoneOne: "",
+          phoneTwo: "",
+          serviceId: "",
+        });
+      }
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Something went wrong",
+        severity: "error",
+      });
+    }
+    setLoading(false);
   };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
-    <form className="mb-2" onSubmit={handleSubmit}>
-      <div className="flex flex-wrap gap-4 mb-4">
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="first_name"
-            className="block mb-2 text-sm font-medium text-gray-900"
+    <div className="w-full mt-2 flex flex-1">
+      <div className="mt-4 ml-2 mr-4 flex-1 bg-white rounded-md p-4">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold">Register New Student</h2>
+          <button
+            onClick={() => router.push("/students")}
+            className="border border-[#302394] text-[#302394] rounded-md py-1 px-4 text-sm"
           >
-            First name*
-          </label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="John"
-            required
-          />
+            Back to Students
+          </button>
         </div>
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="last_name"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Last name*
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="Doe"
-            required
-          />
-        </div>
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="other_names"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Other names*
-          </label>
-          <input
-            type="text"
-            name="otherName"
-            value={formData.otherName}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="Michael"
-            required
-          />
-        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">First Name*</label>
+              <input
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="John"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Last Name*</label>
+              <input
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="Doe"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Other Name*</label>
+              <input
+                name="otherName"
+                value={formData.otherName}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="Michael"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Gender*</label>
+              <input
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="Male"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="john@example.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Main Phone*</label>
+              <input
+                name="phoneOne"
+                value={formData.phoneOne}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="+233xxx"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Second Phone</label>
+              <input
+                name="phoneTwo"
+                value={formData.phoneTwo}
+                onChange={handleChange}
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+                placeholder="+233xxx"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Service Type*</label>
+              <select
+                name="serviceId"
+                value={formData.serviceId}
+                onChange={handleChange}
+                required
+                className="mt-1 border border-gray-300 text-sm rounded w-full p-2"
+              >
+                <option value="">Select Service</option>
+                {services?.data?.map((s) => (
+                  <option key={s.serviceId} value={s.serviceId}>
+                    {s.serviceType}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-6 gap-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-36 flex items-center justify-center bg-[#302394] text-white text-sm rounded-md py-2"
+            >
+              {loading ? <CircularProgress size={20} color="inherit" /> : "Save & Continue"}
+            </button>
+          </div>
+        </form>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          <Alert severity={snackbar.severity} onClose={handleCloseSnackbar}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
-      <div className="flex flex-wrap gap-4 mt-4">
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="gender"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Gender*
-          </label>
-          <input
-            type="text"
-            name="gender"
-            onChange={handleChange}
-            value={formData.gender}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="Male"
-            required
-          />
-        </div>
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="john@example.com"
-          />
-        </div>
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="contact"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Main Number
-          </label>
-          <input
-            type="text"
-            name="phoneOne"
-            value={formData.phoneOne}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="+123456789"
-            required
-          />
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-4 mt-5">
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="contact"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Second Phone Number
-          </label>
-          <input
-            type="text"
-            name="phoneTwo"
-            value={formData.phoneTwo}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            placeholder="+123456789"
-          />
-        </div>
-        <div className="w-full md:w-[32%]">
-          <label
-            htmlFor="service_type"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Service Type
-          </label>
-          <select
-            name="serviceType"
-            value={formData.serviceType}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full p-1"
-            required
-          >
-            <option value="">Service Type</option>
-            <option value="normal">Normal</option>
-            <option value="intensive">Intensive</option>
-          </select>
-        </div>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-2 mt-4 justify-end">
-        <button className="text-[#302394] cursor-pointer border-[#302394] rounded border-2 py-1 px-5">
-          Save & Exit
-        </button>
-        <button type="submit" className="w-full sm:w-32 bg-[#302394] text-white text-sm rounded cursor-pointer py-2 border">
-          Save & Continue
-        </button>
-      </div>
-    </form>
+    </div>
   );
 };
 

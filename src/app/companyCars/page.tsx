@@ -1,212 +1,146 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Button,
-  TablePagination,
-  Menu,
-  TextField,
-  CircularProgress,
-} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "../redux";
-import { useGetAllCarsQuery } from "@/state/api";
+import { useGetAllCarDataQuery, useUpdateCarDataMutation } from "@/state/api";
+import { Plus } from "lucide-react";
 
 const CompanyCarPage = () => {
   const router = useRouter();
-  const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
-  );
-
-  const { data: cars, isError, isLoading } = useGetAllCarsQuery();
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [editAnchorEl, setEditAnchorEl] = useState<null | HTMLElement>(null);
+  const { data: cars = [], isLoading, isError } = useGetAllCarDataQuery();
+  const [updateCar, { isLoading: isUpdating }] = useUpdateCarDataMutation();
   const [editingCar, setEditingCar] = useState<any>(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
-  const handleChangePage = (_, newPage) => setPage(newPage);
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handleEditClick = (car: any) => {
+    setEditingCar({ ...car });
+    setOpenEditDialog(true);
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLElement>, car: any) => {
-    setEditingCar({
-      id: car.carId,
-      carColour: car.color || "",
-      carRoadWorthyExpiry: car.carRoadWorthyExpiry || "",
-      carInsuranceExpiry: car.carInsuranceExpiry || "",
-    });
-    setEditAnchorEl(event.currentTarget);
+  const handleChange = (field: string, value: string) => {
+    setEditingCar((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleEditFieldChange = (field: string, value: string) => {
-    setEditingCar((prev) => ({ ...prev, [field]: value }));
+  const handleSave = async () => {
+    try {
+      await updateCar(editingCar).unwrap();
+      setOpenEditDialog(false);
+    } catch (error) {
+      console.error("Error updating car:", error);
+    }
   };
 
-  const handleEditSave = () => {
-    console.log("Updated car fields:", editingCar);
-    // TODO: Trigger mutation here
-    setEditAnchorEl(null);
-  };
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "carModel", headerName: "Model", width: 150 },
+    { field: "carColour", headerName: "Colour", width: 130 },
+    { field: "carRegistrationNumber", headerName: "Reg. Number", width: 180 },
+    { field: "carTransmissionType", headerName: "Transmission", width: 160 },
+    { field: "carRoadWorthyExpiry", headerName: "Roadworthy Expiry", width: 180 },
+    { field: "carInsuaranceExpiry", headerName: "Insurance Expiry", width: 180 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => handleEditClick(params.row)}
+        >
+          Edit
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <Box className={`mt-4 mr-4 ml-3`}>
-      <Paper elevation={3} className="p-6">
-        <Box className="flex justify-between items-center mb-4">
-          <Typography variant="h5" fontWeight={600}>
-            Company Cars
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#302394", textTransform: "none" }}
-            onClick={() => router.push("/companyCars/registerCar")}
-          >
-            Register Car
-          </Button>
-        </Box>
+    <div className="max-w-full">
+      <div className="mt-2 flex flex-1">
+        <div className="mt-4 ml-2 mr-4 bg-white rounded-md p-4 w-full">
+          {/* Header with Register Car Button */}
+          <div className="flex items-center justify-between">
+            <h4 className="text-3xl font-medium">Company Cars</h4>
+            <Button
+              className="w-48 flex items-center justify-center bg-[#302394] text-white text-sm rounded-md py-2"
+              onClick={() => router.push("/companyCars/registerCar")}
+              variant="contained"
+              sx={{ backgroundColor: "#302394", textTransform: "none" }}
+            >
+              <Plus className="w-5 mr-1" />
+              Register Car
+            </Button>
+          </div>
 
-        {isLoading ? (
-          <Box className="flex justify-center py-8">
-            <CircularProgress />
-          </Box>
-        ) : isError ? (
-          <Typography color="error">Failed to load cars</Typography>
-        ) : (
-          <>
-            <TableContainer>
-              <Table>
-                <TableHead sx={{ backgroundColor: "#302394" }}>
-                  <TableRow>
-                    <TableCell sx={{ color: "white" }}>Car Brand</TableCell>
-                    <TableCell sx={{ color: "white" }}>Year</TableCell>
-                    <TableCell sx={{ color: "white" }}>Color</TableCell>
-                    <TableCell sx={{ color: "white" }}>
-                      Transmission
-                    </TableCell>
-                    <TableCell sx={{ color: "white" }}>Assigned To</TableCell>
-                    <TableCell align="right" sx={{ color: "white" }}>
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {cars &&
-                    cars
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((car: any) => (
-                        <TableRow key={car.id} hover>
-                          <TableCell>{car.brand}</TableCell>
-                          <TableCell>{car.year}</TableCell>
-                          <TableCell>{car.color}</TableCell>
-                          <TableCell>{car.transmission}</TableCell>
-                          <TableCell>{car.assigned}</TableCell>
-                          <TableCell align="right">
-                            <Button
-                              size="small"
-                              variant="contained"
-                              color="secondary"
-                              onClick={(e) => handleEditClick(e, car)}
-                            >
-                              Edit
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+          {/* Table */}
+          <div className="mt-6" style={{ height: 420, width: "100%" }}>
+            {isLoading ? (
+              <div className="flex justify-center py-6">
+                <CircularProgress />
+              </div>
+            ) : isError ? (
+              <div className="text-red-500 text-center">Failed to fetch cars</div>
+            ) : (
+              <DataGrid
+                rows={cars}
+                columns={columns}
+                pageSizeOptions={[5]}
+                className="bg-white shadow rounded-lg border border-gray-200 !text-gray-700"
+              />
+            )}
+          </div>
+        </div>
+      </div>
 
-            <TablePagination
-              component="div"
-              count={cars?.length || 0}
-              page={page}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              rowsPerPageOptions={[5, 10, 25]}
-            />
-          </>
-        )}
-      </Paper>
-
-      {/* Inline Edit Menu */}
-      <Menu
-        anchorEl={editAnchorEl}
-        open={Boolean(editAnchorEl)}
-        onClose={() => setEditAnchorEl(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
+      {/* Edit Dialog */}
+      <Dialog
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        maxWidth="md"
+        fullWidth
       >
-        {editingCar && (
-          <Box className="p-4 flex flex-col gap-3 min-w-[250px]">
+        <DialogTitle>Edit Car</DialogTitle>
+        <DialogContent>
+          <Box className="flex flex-col gap-4 mt-1">
             <TextField
-              label="Car Colour"
-              name="carColour"
-              type="text"
-              value={editingCar.carColour}
-              onChange={(e) =>
-                handleEditFieldChange("carColour", e.target.value)
-              }
+              label="Colour"
+              variant="outlined"
+              value={editingCar?.carColour || ""}
+              onChange={(e) => handleChange("carColour", e.target.value)}
               fullWidth
               size="small"
             />
             <TextField
               label="Roadworthy Expiry"
-              name="carRoadWorthyExpiry"
-              value={editingCar.carRoadWorthyExpiry}
-              onChange={(e) =>
-                handleEditFieldChange("carRoadWorthyExpiry", e.target.value)
-              }
+              variant="outlined"
+              value={editingCar?.carRoadWorthyExpiry || ""}
+              onChange={(e) => handleChange("carRoadWorthyExpiry", e.target.value)}
               fullWidth
               size="small"
-              placeholder="e.g. 2025-08-12"
+              placeholder="e.g. 20th September 2025"
             />
             <TextField
               label="Insurance Expiry"
-              name="carInsuranceExpiry"
-              value={editingCar.carInsuranceExpiry}
-              onChange={(e) =>
-                handleEditFieldChange("carInsuranceExpiry", e.target.value)
-              }
+              variant="outlined"
+              value={editingCar?.carInsuaranceExpiry || ""}
+              onChange={(e) => handleChange("carInsuaranceExpiry", e.target.value)}
               fullWidth
               size="small"
-              placeholder="e.g. 2025-10-01"
+              placeholder="e.g. 20"
             />
-            <Box className="flex justify-between">
-              <Button
-                size="small"
-                color="inherit"
-                onClick={() => setEditAnchorEl(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={handleEditSave}
-              >
-                Save
-              </Button>
-            </Box>
           </Box>
-        )}
-      </Menu>
-    </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave} disabled={isUpdating}>
+            {isUpdating ? "Saving..." : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
 

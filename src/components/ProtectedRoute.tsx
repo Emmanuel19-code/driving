@@ -1,25 +1,19 @@
 "use client";
-import { useAppSelector } from "@/app/redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/app/redux";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const router = useRouter();
+    const router = useRouter();
+  const accessToken = useAppSelector((state) => state.global.accessToken);
 
   useEffect(() => {
-    setIsHydrated(true); // trigger after component mounts
-  }, []);
-
-  useEffect(() => {
-    if (isHydrated && !accessToken) {
-      router.replace("/login");
+    if (!accessToken) {
+      router.replace("/");
     }
-  }, [isHydrated, accessToken, router]);
+  }, [accessToken, router]);
 
-  // Wait until redux-persist is hydrated
-  if (!isHydrated) return null;
+  if (!accessToken) return null; 
 
   return <>{children}</>;
 };
