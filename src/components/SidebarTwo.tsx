@@ -138,7 +138,7 @@ const SidebarTwo = () => {
           isCollapsed={isSidebarCollapsed}
         />
         <SidebarLinkTwo
-          href="/reports"
+          href="/report"
           icon={Notebook}
           label="Reports"
           isCollapsed={isSidebarCollapsed}

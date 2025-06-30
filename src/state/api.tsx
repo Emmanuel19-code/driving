@@ -91,6 +91,13 @@ export const api = createApi({
         body: paymentData,
       }),
     }),
+    generateScheduleTime:build.mutation({
+        query:(scheduleData)=>({
+           url:"timeslots/generate_schedules",
+           method:"POST",
+           body:scheduleData
+        })
+    }),
     getAllPayments:build.query({
       query:()=>"payment/payments_received"
     }),
@@ -155,6 +162,12 @@ export const api = createApi({
     getPaymentForThisYear:build.query({
       query:()=>"payment/total_payment_this_year"
     }),
+    getAmountYetToBeReceived:build.query({
+      query:()=>"payment/amount-yet-to-be-received"
+    }),
+    getReportSummary:build.query({
+      query:()=>"reports/report_summary"
+    }),
     logout: build.mutation<void, void>({
       query: () => ({
         url: "system_security/logout",
@@ -205,5 +218,8 @@ export const {
   useUpdateFuelRecordMutation,
   useGetStudentStatQuery,
   useGetAllPaymentsQuery,
-  useGetPaymentForThisYearQuery
+  useGetPaymentForThisYearQuery,
+  useGetAmountYetToBeReceivedQuery,
+  useGetReportSummaryQuery,
+  useGenerateScheduleTimeMutation
 } = api;

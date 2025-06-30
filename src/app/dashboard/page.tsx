@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import AlertCard from "./AlertCard";
 import UpcomingPracticalSession from "./UpcomingPracticalSession";
-import { useGetPaymentForThisYearQuery, useGetStudentStatQuery } from "@/state/api";
+import { useGetAmountYetToBeReceivedQuery, useGetPaymentForThisYearQuery, useGetStudentStatQuery } from "@/state/api";
 
 const Dashboard = () => {
   const {
@@ -23,7 +23,13 @@ const Dashboard = () => {
     isError: isPaymentError,
     isLoading: isPaymentLoading,
   } = useGetPaymentForThisYearQuery();
-
+  const {
+    data: amountToBeReceived,
+    isError: amountToBeReceivedError,
+    isLoading: isamountLoading
+  } = useGetAmountYetToBeReceivedQuery();
+ 
+  
   if (isStudentLoading || isPaymentLoading) {
     return <div className="p-4 text-gray-600">Loading dashboard stats...</div>;
   }
@@ -64,18 +70,24 @@ const Dashboard = () => {
       {/* StatCard 2: Payment Stats */}
       <div className="w-full">
         <StatCard
-          title="Cash Flow"
+          title="Cash Flow "
           primaryIcon={<DollarSign className="text-green-600 w-4 h-4" />}
           dateRange={`${new Date().getFullYear()}`}
           details={[
             {
-              title: "Money Received For Services",
+              title: "Money Received For Services ",
               amount: `${Number(paymentStat?.totalReceived || 0).toLocaleString()}`,
               changePercentage: 20, // Optional: use real calc
               IconComponent: TrendingUp,
             },
             {
-              title: "Expenses",
+              title: "Money To Be Received For Services ",
+              amount: `${Number(amountToBeReceived?.data || 0).toLocaleString()}`,
+              changePercentage: 20, // Optional: use real calc
+              IconComponent: TrendingUp,
+            },
+            {
+              title: "Expenses ",
               amount: "0.00", // Replace with actual expenses if you have it
               changePercentage: 0,
               IconComponent: TrendingDown,
